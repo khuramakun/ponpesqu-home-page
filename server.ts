@@ -2,24 +2,12 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { tmpdir } from 'os';
-import { createServer as createViteServer } from "vite";
 
-const PORT = 3000;
-// Ganti dengan ini:
-const PORT = 3000;
+const app = express();
+const PORT = process.env.PORT || 3000;
 const DB_FILE = path.join(tmpdir(), "db.json");
 
-// Tambahkan CORS support
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
+// ========== DEFAULT DATABASE ==========
 const DEFAULT_K_DB = {
   kas_market: 1250000,
   kas_yayasan: 5800000,
@@ -170,7 +158,7 @@ const DEFAULT_K_DB = {
   }
 };
 
-// Database handlers (Local db.json only)
+// ========== DATABASE FUNCTIONS ==========
 function loadDBLocal() {
   try {
     if (fs.existsSync(DB_FILE)) {
@@ -192,9 +180,9 @@ function saveDBLocal(data: any) {
   }
 }
 
+// ========== START SERVER ==========
 async function startServer() {
-  const app = express();
- // CORS
+  // CORS Middleware
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -204,12 +192,13 @@ async function startServer() {
     }
     next();
   });
-  // Allow high limits for base64 image uploads
+
+  // Body parser
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-  // REST API endpoints
-  app.get("/api/db", async (req, res) => {
+  // ========== API ROUTES ==========
+  app.get("/api/db", (req, res) => {
     try {
       const db = loadDBLocal();
       res.json(db);
@@ -219,7 +208,7 @@ async function startServer() {
     }
   });
 
-  app.post("/api/db/sync", async (req, res) => {
+  app.post("/api/db/sync", (req, res) => {
     const newDb = req.body;
     if (!newDb || typeof newDb !== "object") {
       return res.status(400).json({ error: "Invalid database state" });
@@ -233,7 +222,7 @@ async function startServer() {
     }
   });
 
-  app.post("/api/db/reset", async (req, res) => {
+  app.post("/api/db/reset", (req, res) => {
     try {
       saveDBLocal(DEFAULT_K_DB);
       res.json({ success: true, db: DEFAULT_K_DB });
@@ -243,7 +232,7 @@ async function startServer() {
     }
   });
 
-  app.post("/api/login-log", async (req, res) => {
+  app.post("/api/login-log", (req, res) => {
     const { nama, role } = req.body;
     if (!nama || !role) {
       return res.status(400).json({ error: "Missing nama or role" });
@@ -256,7 +245,6 @@ async function startServer() {
       
       const ipAddress = (req.headers["x-forwarded-for"] as string || req.socket.remoteAddress || "127.0.0.1").split(",")[0].trim();
       
-      // Timestamp WIB/GMT+7
       const now = new Date();
       const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
       const wibTime = new Date(utcTime + (3600000 * 7));
@@ -290,17 +278,18 @@ async function startServer() {
     }
   });
 
-  // Handle Vite middleware
-// Untuk production di Vercel, kita hanya serve static files
-const distPath = path.join(process.cwd(), "dist");
-app.use(express.static(distPath));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
-});
+  // ========== SERVE STATIC FILES ==========
+  const distPath = path.join(process.cwd(), "dist");
+  app.use(express.static(distPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
 
+  // ========== START LISTENING ==========
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[PONPESQU Backend] Running on http://0.0.0.0:${PORT}`);
+    console.log(`[PONPESQU Backend] Running on port ${PORT}`);
   });
 }
 
+// ========== RUN ==========
 startServer();
