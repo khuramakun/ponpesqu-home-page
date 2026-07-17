@@ -1,0 +1,285 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&family=Amiri:wght=400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "Amiri", serif;
+}
+
+:root {
+  --bg-app: #02110e;
+  --bg-card: rgba(2, 44, 34, 0.85);
+  --text-main: #f3f4f6;
+  --border-gold: rgba(217, 119, 6, 0.15);
+  --primary: #10b981;
+  --accent: #f59e0b;
+  --danger: #ef4444;
+  --success: #10b981;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.03) 0%, transparent 50%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.arabic-brand {
+  font-family: var(--font-arabic);
+}
+
+/* Glassmorphism Design Theme */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-gold);
+}
+
+.gold-glow {
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  box-shadow: inset 0 0 40px rgba(217, 119, 6, 0.05);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+  width: 100%;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 1.5s infinite;
+}
+
+/* Kartu Santri Virtual Card Styling */
+.virtual-id-card {
+  background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+.virtual-id-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Barcode styling for clean vector scanning */
+.barcode-svg {
+  background: #fff;
+  padding: 6px;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+@media print {
+  /* Prevent browser viewport/dimension locks */
+  html, body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Hide the entire application UI cleanly during print */
+  #root,
+  .backdrop-blur,
+  dialog,
+  .fixed,
+  .absolute {
+    visibility: hidden !important;
+  }
+
+  /* Except for printable dialog wrappers */
+  dialog.printable-dialog,
+  dialog:has(#print-journal-wrapper) {
+    visibility: visible !important;
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    z-index: 999999 !important;
+  }
+
+  /* Ensure all of our targeted print wrappers are 100% visible and positioned correctly */
+  #print-area-id-card-wrapper,
+  #kuitansi-print-area-wrapper,
+  #print-area-saving-slip-wrapper,
+  #print-receipt-area,
+  #print-pdf-report-container,
+  #print-area-kas-report,
+  #print-journal-wrapper {
+    visibility: visible !important;
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    z-index: 999999 !important;
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  /* Make sure every nested element inside our print wrappers is visible as well! */
+  #print-area-id-card-wrapper *,
+  #kuitansi-print-area-wrapper *,
+  #print-area-saving-slip-wrapper *,
+  #print-receipt-area *,
+  #print-pdf-report-container *,
+  #print-area-kas-report *,
+  #print-journal-wrapper * {
+    visibility: visible !important;
+  }
+
+  /* Style 1: ID Card wrapper and ID Card */
+  #print-area-id-card-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: white !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  #print-area-id-card {
+    width: 9.5cm !important;
+    height: 6cm !important;
+    border-radius: 12px !important;
+    padding: 14px !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(135deg, #022c22 0%, #064e3b 100%) !important;
+    border: 1px solid #065f46 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .virtual-id-card {
+    background: linear-gradient(135deg, #022c22 0%, #064e3b 100%) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Style 2: SPP Kuitansi thermal receipt format */
+  #kuitansi-print-area-wrapper {
+    padding-top: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  #kuitansi-print-area {
+    width: 80mm !important;
+    background: white !important;
+    color: black !important;
+    border: 1px dashed #000 !important;
+    border-radius: 0 !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+  }
+
+  /* Style 3: Saving Slip thermal receipt format */
+  #print-area-saving-slip-wrapper {
+    padding-top: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  #print-area-saving-slip {
+    width: 80mm !important;
+    background: white !important;
+    color: black !important;
+    border: 1px dashed #000 !important;
+    border-radius: 0 !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+  }
+
+  /* Style 4: Market Print Receipt thermal receipt format */
+  #print-receipt-area {
+    width: 80mm !important;
+    background: white !important;
+    color: black !important;
+    border: 1px dashed #000 !important;
+    border-radius: 0 !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+  }
+
+  /* Style 5: Reports PDF */
+  #print-pdf-report-container {
+    padding: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Style 6: Yayasan Kas Report */
+  #print-area-kas-report {
+    padding: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Style 7: Journal Report */
+  #print-journal-wrapper {
+    padding: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* General print utility rules to hide double pagination and headers/footers */
+  @page {
+    size: auto;
+    margin: 5mm;
+  }
+}
