@@ -1,10 +1,24 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import { tmpdir } from 'os';
 import { createServer as createViteServer } from "vite";
 
 const PORT = 3000;
-const DB_FILE = path.join(process.cwd(), "db.json");
+// Ganti dengan ini:
+const PORT = 3000;
+const DB_FILE = path.join(tmpdir(), "db.json");
+
+// Tambahkan CORS support
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 const DEFAULT_K_DB = {
   kas_market: 1250000,
@@ -180,7 +194,16 @@ function saveDBLocal(data: any) {
 
 async function startServer() {
   const app = express();
-
+ // CORS
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
+    next();
+  });
   // Allow high limits for base64 image uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
